@@ -1092,6 +1092,7 @@ void ExtensibleCognitiveRadio::reset_rx() {
   }
   int num_rx_samps = 1;
   while (num_rx_samps > 0)
+    // TODO Needs to be changed to streamer
     num_rx_samps = usrp_rx->get_device()->recv(
           rx_buffer, rx_buffer_len, metadata_rx, uhd::io_type_t::COMPLEX_FLOAT32,
           uhd::device::RECV_MODE_ONE_PACKET, 0.01);
@@ -1335,8 +1336,8 @@ void *ECR_rx_worker(void *_arg) {
       // grab data from USRP and push through the frame synchronizer
       size_t num_rx_samps = 0;
       pthread_mutex_lock(&(ECR->rx_mutex));
-      num_rx_samps = ECR->usrp_rx_streamer->recv(
-          buff_ptrs, ECR->rx_buffer_len, ECR->metadata_rx);
+      num_rx_samps = ECR->usrp_rx_streamer->recv(buff_ptrs, ECR->rx_buffer_len, ECR->metadata_rx,0.01,true);
+
       memcpy(ECR->rx_buffer, buff_ptrs[0], ECR->rx_buffer_len * sizeof(std::complex<float>));
       ofdmflexframesync_execute(ECR->fs, ECR->rx_buffer, num_rx_samps);
       pthread_mutex_unlock(&(ECR->rx_mutex));
@@ -1755,7 +1756,6 @@ void *ECR_tx_worker(void *_arg) {
       // transmit frame
       if(nread > 0) {
         ECR->tx_frame_counter++;
-        usleep(10000);
         ECR->transmit_frame(ExtensibleCognitiveRadio::DATA, payload, payload_len);
       }
 
