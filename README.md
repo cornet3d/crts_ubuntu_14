@@ -1,3 +1,5 @@
+This is a modified version of CRTS working with UHD 3.10 for Ubuntu 14.04 with the Old Liquid DSP
+
 This documentation was formatted to create the crts-manual.pdf file using Doxygen which
 doesn't translate super neatly to the github page.
 
